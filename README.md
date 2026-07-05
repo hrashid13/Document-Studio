@@ -31,9 +31,17 @@ Notes:
 1. **New project** — pick an empty folder; the app creates `project.json` + `assets/` there.
 2. **Import essay** — `.txt`, `.md`, or `.docx`. Each paragraph becomes a storyboard block.
 3. **Import media** — drag-drop or "Add files" in the left panel; paste URLs for link items. Tag items ("before", "after", …).
-4. **Assign treatments** — per block, pick Plain / Scroll reveal / Drag compare / Hover annotate. Primary settings are on the card; everything else in the right-hand Inspector.
-5. **Preview** — full-width live render using the exact same components as the export.
-6. **Export…** — pick a destination; the app writes `<destination>/<project-name>/` with `index.html`, `viewer.js/css`, and copied `assets/`. Open `index.html` directly in a browser.
+4. **Drag media into the essay** — drag an image or file from the media library and drop it between two storyboard blocks to insert it there (images become figures, files become download cards).
+5. **Assign treatments** — per block, pick from: Plain, Scroll reveal, Drag compare, Hover annotate, Image figure, File attachment, Sticky scroll (scrollytelling), or Sentence focus. Primary settings are on the card; everything else in the right-hand Inspector.
+6. **Pick a theme** — the toolbar Theme dropdown swaps font pairing, accent color, and spacing (Classic / Modern / Editorial / Night). Applies to preview and export alike.
+7. **Preview** — full-width live render using the exact same components as the export.
+8. **Export…** — pick a destination; the app writes `<destination>/<project-name>/` with `index.html`, `viewer.js/css`, and copied `assets/`. Open `index.html` directly in a browser.
+
+In-app help: the **?** button in the toolbar explains every treatment and theme.
+
+### Scrollytelling sections
+
+The "Sticky scroll" treatment is the Pudding signature move: a visual stays pinned on one side while text steps scroll past on the other. The pinned visual is either an **image sequence** (each step crossfades to a different image) or a **bar chart** that morphs between steps — bars re-sort and re-size as the reader scrolls (chart data is one `Label, value` per line; reuse labels across steps so bars morph instead of popping). "Sentence focus" highlights the current sentence while dimming the rest as the reader scrolls.
 
 ## Architecture notes
 
@@ -46,4 +54,4 @@ Notes:
 
 ## Not yet built (later phases)
 
-Click-expand, parallax-image, animated-stat, pull-quote, embedded-link treatments, and the rules-engine auto-populate pass (PRD sections 8 & 10).
+Click-expand, parallax-image, animated-stat, pull-quote, and embedded-link treatments, and the rules-engine auto-populate pass (PRD sections 8 & 10). Beyond the PRD, the app has since gained: image-figure and attachment blocks, drag-media-into-essay, themes, scrollytelling sections with morphing bar charts, and sentence-focus highlighting.

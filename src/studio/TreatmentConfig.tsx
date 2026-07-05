@@ -1,4 +1,4 @@
-import type { Block, MediaItem } from '../shared/types'
+import type { Block, MediaItem, ScrollyStep } from '../shared/types'
 
 interface Props {
   block: Block
@@ -7,24 +7,26 @@ interface Props {
   onConfig: (patch: Record<string, unknown>) => void
 }
 
-function ImagePicker({
+function MediaPicker({
   label,
   value,
   media,
+  kind,
   onChange,
 }: {
   label: string
   value: unknown
   media: MediaItem[]
+  kind: 'image' | 'file'
   onChange: (id: string) => void
 }) {
-  const images = media.filter((m) => m.type === 'image')
+  const items = media.filter((m) => m.type === kind)
   return (
     <label className="field">
       <span>{label}</span>
       <select value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}>
         <option value="">— none —</option>
-        {images.map((m) => (
+        {items.map((m) => (
           <option key={m.id} value={m.id}>
             {m.originalFilename}
             {m.tags.length ? ` (${m.tags.join(', ')})` : ''}
@@ -32,6 +34,91 @@ function ImagePicker({
         ))}
       </select>
     </label>
+  )
+}
+
+function ScrollyStepsEditor({
+  steps,
+  visualType,
+  media,
+  onSteps,
+}: {
+  steps: ScrollyStep[]
+  visualType: string
+  media: MediaItem[]
+  onSteps: (steps: ScrollyStep[]) => void
+}) {
+  const update = (i: number, patch: Partial<ScrollyStep>) =>
+    onSteps(steps.map((s, j) => (j === i ? { ...s, ...patch } : s)))
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir
+    if (j < 0 || j >= steps.length) return
+    const next = [...steps]
+    ;[next[i], next[j]] = [next[j], next[i]]
+    onSteps(next)
+  }
+
+  return (
+    <div className="steps-editor">
+      {steps.map((step, i) => (
+        <div key={step.id ?? i} className="step-editor">
+          <div className="step-editor-head">
+            <span>Step {i + 1}</span>
+            <span className="step-editor-actions">
+              <button className="mini-btn" title="Move step up" onClick={() => move(i, -1)}>↑</button>
+              <button className="mini-btn" title="Move step down" onClick={() => move(i, 1)}>↓</button>
+              <button
+                className="mini-btn"
+                title="Remove step"
+                onClick={() => onSteps(steps.filter((_, j) => j !== i))}
+              >
+                ✕
+              </button>
+            </span>
+          </div>
+          <label className="field">
+            <span>Step text (shown while this step is active)</span>
+            <textarea rows={3} value={step.text} onChange={(e) => update(i, { text: e.target.value })} />
+          </label>
+          {visualType === 'chart' ? (
+            <label className="field">
+              <span>Chart data — one “Label, value” per line</span>
+              <textarea
+                rows={4}
+                placeholder={'Apples, 42\nOranges, 31\nPears, 12'}
+                value={step.chartData ?? ''}
+                onChange={(e) => update(i, { chartData: e.target.value })}
+              />
+            </label>
+          ) : (
+            <MediaPicker
+              label="Pinned image while this step is active"
+              value={step.imageId}
+              media={media}
+              kind="image"
+              onChange={(id) => update(i, { imageId: id })}
+            />
+          )}
+        </div>
+      ))}
+      <button
+        className="btn"
+        onClick={() =>
+          onSteps([
+            ...steps,
+            {
+              id: `step_${Date.now()}`,
+              text: '',
+              imageId: '',
+              // Start from the previous step's data so charts morph rather than restart.
+              chartData: steps[steps.length - 1]?.chartData ?? '',
+            },
+          ])
+        }
+      >
+        + Add step
+      </button>
+    </div>
   )
 }
 
@@ -76,8 +163,8 @@ export function TreatmentConfig({ block, media, compact = false, onConfig }: Pro
     case 'drag-compare':
       return (
         <div className="config-form">
-          <ImagePicker label="Image A (left / before)" value={cfg.imageA} media={media} onChange={(id) => onConfig({ imageA: id })} />
-          <ImagePicker label="Image B (right / after)" value={cfg.imageB} media={media} onChange={(id) => onConfig({ imageB: id })} />
+          <MediaPicker label="Image A (left / before)" value={cfg.imageA} media={media} kind="image" onChange={(id) => onConfig({ imageA: id })} />
+          <MediaPicker label="Image B (right / after)" value={cfg.imageB} media={media} kind="image" onChange={(id) => onConfig({ imageB: id })} />
           {!compact && (
             <>
               <label className="field">
@@ -126,7 +213,7 @@ export function TreatmentConfig({ block, media, compact = false, onConfig }: Pro
                 </label>
               )}
               {popoverType === 'image' && (
-                <ImagePicker label="Popover image" value={cfg.imageId} media={media} onChange={(id) => onConfig({ imageId: id })} />
+                <MediaPicker label="Popover image" value={cfg.imageId} media={media} kind="image" onChange={(id) => onConfig({ imageId: id })} />
               )}
               {popoverType === 'link' && (
                 <label className="field">
@@ -143,6 +230,91 @@ export function TreatmentConfig({ block, media, compact = false, onConfig }: Pro
         </div>
       )
     }
+
+    case 'image-figure':
+      return (
+        <div className="config-form">
+          <MediaPicker label="Image" value={cfg.imageId} media={media} kind="image" onChange={(id) => onConfig({ imageId: id })} />
+          {!compact && (
+            <label className="field">
+              <span>Caption (optional)</span>
+              <input value={String(cfg.caption ?? '')} onChange={(e) => onConfig({ caption: e.target.value })} />
+            </label>
+          )}
+        </div>
+      )
+
+    case 'attachment':
+      return (
+        <div className="config-form">
+          <MediaPicker label="File" value={cfg.fileId} media={media} kind="file" onChange={(id) => onConfig({ fileId: id })} />
+          {!compact && (
+            <label className="field">
+              <span>Label (defaults to the filename)</span>
+              <input value={String(cfg.label ?? '')} onChange={(e) => onConfig({ label: e.target.value })} />
+            </label>
+          )}
+        </div>
+      )
+
+    case 'scrolly': {
+      const visualType = String(cfg.visualType ?? 'image')
+      const steps = (Array.isArray(cfg.steps) ? cfg.steps : []) as ScrollyStep[]
+      return (
+        <div className="config-form">
+          <label className="field">
+            <span>Pinned visual</span>
+            <select value={visualType} onChange={(e) => onConfig({ visualType: e.target.value })}>
+              <option value="image">Image sequence</option>
+              <option value="chart">Bar chart (morphs between steps)</option>
+            </select>
+          </label>
+          <label className="field">
+            <span>Visual side</span>
+            <select value={String(cfg.position ?? 'left')} onChange={(e) => onConfig({ position: e.target.value })}>
+              <option value="left">Left (text on right)</option>
+              <option value="right">Right (text on left)</option>
+            </select>
+          </label>
+          {compact ? (
+            <p className="hint">
+              {steps.length} step{steps.length === 1 ? '' : 's'} — select this block to edit them in the Inspector.
+            </p>
+          ) : (
+            <>
+              {visualType === 'chart' && (
+                <label className="field">
+                  <span>Chart title (optional)</span>
+                  <input
+                    value={String(cfg.chartTitle ?? '')}
+                    onChange={(e) => onConfig({ chartTitle: e.target.value })}
+                  />
+                </label>
+              )}
+              <ScrollyStepsEditor
+                steps={steps}
+                visualType={visualType}
+                media={media}
+                onSteps={(next) => onConfig({ steps: next })}
+              />
+            </>
+          )}
+        </div>
+      )
+    }
+
+    case 'sentence-focus':
+      return (
+        <div className="config-form">
+          <label className="field">
+            <span>Highlight style</span>
+            <select value={String(cfg.style ?? 'dim')} onChange={(e) => onConfig({ style: e.target.value })}>
+              <option value="dim">Dim the rest</option>
+              <option value="mark">Dim + accent highlight</option>
+            </select>
+          </label>
+        </div>
+      )
 
     default:
       return compact ? null : <p className="hint">Plain text — no settings.</p>

@@ -15,8 +15,20 @@ function MediaCard({ item }: { item: MediaItem }) {
     dispatch({ type: 'UPDATE_MEDIA', id: item.id, patch: { tags } })
   }
 
+  const draggable = item.type !== 'link'
+
   return (
-    <div className="media-card">
+    <div
+      className={`media-card${draggable ? ' draggable' : ''}`}
+      draggable={draggable}
+      title={draggable ? 'Drag into the storyboard to insert this into the essay' : undefined}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/x-ia-media', item.id)
+        e.dataTransfer.effectAllowed = 'copy'
+        dispatch({ type: 'SET_DRAGGING_MEDIA', dragging: true })
+      }}
+      onDragEnd={() => dispatch({ type: 'SET_DRAGGING_MEDIA', dragging: false })}
+    >
       <div className="media-thumb">
         {item.type === 'image' && item.storedPath ? (
           <img src={resolveStudioAsset(item.storedPath)} alt={item.originalFilename} />

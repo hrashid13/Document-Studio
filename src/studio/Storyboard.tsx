@@ -1,8 +1,46 @@
+import { useState } from 'react'
+import type { DragEvent } from 'react'
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { sortedBlocks, useStudio } from './state'
+import { blockForMedia, nextBlockId, sortedBlocks, useStudio } from './state'
 import { BlockCard } from './BlockCard'
+
+const MEDIA_MIME = 'application/x-ia-media'
+
+/** Drop target between blocks: dragging a media item here inserts a new block. */
+function InsertZone({ index }: { index: number }) {
+  const { state, dispatch } = useStudio()
+  const [over, setOver] = useState(false)
+
+  const onDrop = (e: DragEvent) => {
+    e.preventDefault()
+    setOver(false)
+    const mediaId = e.dataTransfer.getData(MEDIA_MIME)
+    const item = state.project?.media.find((m) => m.id === mediaId)
+    if (!item || !state.project) return
+    const block = blockForMedia(item, nextBlockId(state.project.blocks))
+    dispatch({ type: 'INSERT_BLOCK', index, block })
+    dispatch({ type: 'SET_DRAGGING_MEDIA', dragging: false })
+  }
+
+  return (
+    <div
+      className={`insert-zone${state.draggingMedia ? ' visible' : ''}${over ? ' over' : ''}`}
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes(MEDIA_MIME)) {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'copy'
+          setOver(true)
+        }
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={onDrop}
+    >
+      <span>drop media here to insert a block</span>
+    </div>
+  )
+}
 
 export function Storyboard() {
   const { state, dispatch } = useStudio()
@@ -22,9 +60,15 @@ export function Storyboard() {
 
   if (blocks.length === 0) {
     return (
-      <div className="panel-empty">
-        <p>No blocks yet.</p>
-        <p className="hint">Use “Import essay” in the toolbar to load a .txt, .md, or .docx file. Each paragraph becomes a block.</p>
+      <div className="storyboard">
+        <InsertZone index={0} />
+        <div className="panel-empty">
+          <p>No blocks yet.</p>
+          <p className="hint">
+            Use “Import essay” in the toolbar to load a .txt, .md, or .docx file — each paragraph becomes a block. You
+            can also drag media from the left panel into this area.
+          </p>
+        </div>
       </div>
     )
   }
@@ -33,9 +77,13 @@ export function Storyboard() {
     <div className="storyboard">
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          {blocks.map((block) => (
-            <BlockCard key={block.id} block={block} media={state.project!.media} />
+          {blocks.map((block, i) => (
+            <div key={block.id}>
+              <InsertZone index={i} />
+              <BlockCard block={block} media={state.project!.media} />
+            </div>
           ))}
+          <InsertZone index={blocks.length} />
         </SortableContext>
       </DndContext>
     </div>

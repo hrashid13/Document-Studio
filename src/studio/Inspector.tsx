@@ -16,16 +16,17 @@ export function Inspector() {
     )
   }
 
-  const label = AVAILABLE_TREATMENTS.find((t) => t.value === block.treatment.type)?.label ?? block.treatment.type
+  const info = AVAILABLE_TREATMENTS.find((t) => t.value === block.treatment.type)
 
   return (
     <div className="inspector">
       <div className="panel-title">Inspector</div>
       <div className="inspector-block-info">
         <span className="inspector-kicker">
-          Block {block.order + 1} · {label}
+          Block {block.order + 1} · {info?.label ?? block.treatment.type}
         </span>
-        <p className="inspector-text">{block.rawText}</p>
+        {info && <p className="hint">{info.description}</p>}
+        <p className="inspector-text">{block.rawText || '(media block — no text)'}</p>
       </div>
       <TreatmentConfig
         block={block}

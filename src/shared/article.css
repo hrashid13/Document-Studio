@@ -1,11 +1,71 @@
-/* Article rendering — shared by studio preview and exported bundle. */
+/* Article rendering — shared by studio preview and exported bundle.
+   Themes are CSS-variable sets switched via data-theme on .ia-page. */
 
 .ia-page {
-  background: #faf8f4;
-  color: #1b1b1f;
+  /* Classic (default theme) */
+  --ia-bg: #faf8f4;
+  --ia-text: #1b1b1f;
+  --ia-dim: #9a938a;
+  --ia-accent: #c2410c;
+  --ia-surface: #ffffff;
+  --ia-font-body: Georgia, 'Times New Roman', serif;
+  --ia-font-heading: Georgia, 'Times New Roman', serif;
+  --ia-heading-size: 2.8rem;
+  --ia-heading-weight: 700;
+  --ia-para-size: 1.2rem;
+  --ia-line-height: 1.85;
+  --ia-para-space: 1.6rem;
+
+  background: var(--ia-bg);
+  color: var(--ia-text);
   min-height: 100vh;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--ia-font-body);
   -webkit-font-smoothing: antialiased;
+}
+
+.ia-page[data-theme='modern'] {
+  --ia-bg: #ffffff;
+  --ia-text: #111827;
+  --ia-dim: #9ca3af;
+  --ia-accent: #2563eb;
+  --ia-surface: #f8fafc;
+  --ia-font-body: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --ia-font-heading: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --ia-heading-size: 2.5rem;
+  --ia-heading-weight: 800;
+  --ia-para-size: 1.08rem;
+  --ia-line-height: 1.7;
+  --ia-para-space: 1.3rem;
+}
+
+.ia-page[data-theme='editorial'] {
+  --ia-bg: #fffdf7;
+  --ia-text: #201a16;
+  --ia-dim: #a89f90;
+  --ia-accent: #b91c1c;
+  --ia-surface: #ffffff;
+  --ia-font-body: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --ia-font-heading: 'Playfair Display', 'Bodoni MT', Didot, 'Palatino Linotype', serif;
+  --ia-heading-size: 3.4rem;
+  --ia-heading-weight: 700;
+  --ia-para-size: 1.25rem;
+  --ia-line-height: 2;
+  --ia-para-space: 2rem;
+}
+
+.ia-page[data-theme='night'] {
+  --ia-bg: #101014;
+  --ia-text: #e8e6e3;
+  --ia-dim: #6f6c78;
+  --ia-accent: #34d399;
+  --ia-surface: #1c1c24;
+  --ia-font-body: system-ui, 'Segoe UI', sans-serif;
+  --ia-font-heading: system-ui, 'Segoe UI', sans-serif;
+  --ia-heading-size: 2.6rem;
+  --ia-heading-weight: 800;
+  --ia-para-size: 1.1rem;
+  --ia-line-height: 1.8;
+  --ia-para-space: 1.5rem;
 }
 
 .ia-article {
@@ -15,7 +75,9 @@
 }
 
 .ia-header h1 {
-  font-size: 2.8rem;
+  font-family: var(--ia-font-heading);
+  font-size: var(--ia-heading-size);
+  font-weight: var(--ia-heading-weight);
   line-height: 1.15;
   margin: 0 0 3.5rem;
   letter-spacing: -0.01em;
@@ -23,16 +85,20 @@
 }
 
 .ia-paragraph {
-  font-size: 1.2rem;
-  line-height: 1.85;
-  margin: 0 0 1.6rem;
+  font-size: var(--ia-para-size);
+  line-height: var(--ia-line-height);
+  margin: 0 0 var(--ia-para-space);
+}
+
+.ia-scroll-tail {
+  height: 45vh;
 }
 
 .ia-footer {
   margin-top: 5rem;
   text-align: center;
   font-size: 0.8rem;
-  color: #9a938a;
+  color: var(--ia-dim);
   font-family: system-ui, sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -128,10 +194,10 @@
 .ia-compare-placeholder {
   margin: 2.5rem 0;
   padding: 2.5rem 1.5rem;
-  border: 2px dashed #cfc8bc;
+  border: 2px dashed var(--ia-dim);
   border-radius: 6px;
   text-align: center;
-  color: #8d8578;
+  color: var(--ia-dim);
   font-family: system-ui, sans-serif;
   font-size: 0.9rem;
 }
@@ -142,11 +208,11 @@
   position: relative;
   text-decoration: underline;
   text-decoration-style: dotted;
-  text-decoration-color: #c2410c;
+  text-decoration-color: var(--ia-accent);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
   cursor: help;
-  color: #c2410c;
+  color: var(--ia-accent);
 }
 
 .ia-popover {
@@ -155,10 +221,10 @@
   left: 50%;
   transform: translateX(-50%) translateY(4px);
   width: 260px;
-  background: #fff;
-  color: #1b1b1f;
+  background: var(--ia-surface);
+  color: var(--ia-text);
   border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   padding: 0.8rem 1rem;
   font-family: system-ui, sans-serif;
   font-size: 0.88rem;
@@ -177,7 +243,7 @@
 }
 
 .ia-popover a {
-  color: #c2410c;
+  color: var(--ia-accent);
   word-break: break-all;
 }
 
@@ -187,4 +253,217 @@
   visibility: visible;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
+}
+
+/* --- Image figure -------------------------------------------------------- */
+
+.ia-figure {
+  margin: 2.5rem 0;
+}
+
+.ia-figure img {
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.ia-figure figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--ia-dim);
+}
+
+/* --- File attachment ------------------------------------------------------ */
+
+.ia-attachment {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 2rem 0;
+  padding: 14px 18px;
+  border: 1px solid color-mix(in srgb, var(--ia-dim) 40%, transparent);
+  border-radius: 10px;
+  background: var(--ia-surface);
+  font-family: system-ui, sans-serif;
+  text-decoration: none;
+  color: var(--ia-text);
+  transition: border-color 0.15s ease;
+}
+
+.ia-attachment:hover {
+  border-color: var(--ia-accent);
+}
+
+.ia-attachment-icon {
+  font-size: 1.6rem;
+}
+
+.ia-attachment-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.ia-attachment-hint {
+  font-size: 0.78rem;
+  color: var(--ia-dim);
+}
+
+/* --- Sticky scroll (scrollytelling) ---------------------------------------- */
+
+.ia-scrolly {
+  --ia-scrolly-width: min(1100px, 94vw);
+  width: var(--ia-scrolly-width);
+  margin: 3rem 0 3rem calc(50% - var(--ia-scrolly-width) / 2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  /* Grid items must stretch to the full section height or position:sticky
+     inside the visual column has no room to travel. */
+}
+
+.ia-scrolly[data-side='right'] .ia-scrolly-visual {
+  order: 2;
+}
+
+.ia-scrolly-sticky {
+  position: sticky;
+  top: 10vh;
+}
+
+.ia-scrolly-visual img {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* Stack crossfading images in the same grid cell so height stays stable. */
+.ia-scrolly-media {
+  display: grid;
+}
+
+.ia-scrolly-media img {
+  grid-area: 1 / 1;
+}
+
+.ia-scrolly-step {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  opacity: 0.25;
+  transition: opacity 0.35s ease;
+}
+
+.ia-scrolly-step.active {
+  opacity: 1;
+}
+
+.ia-scrolly-step p {
+  font-size: var(--ia-para-size);
+  line-height: var(--ia-line-height);
+  margin: 0;
+}
+
+.ia-scrolly-placeholder {
+  border: 2px dashed var(--ia-dim);
+  border-radius: 8px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--ia-dim);
+  font-family: system-ui, sans-serif;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .ia-scrolly {
+    display: block;
+  }
+  .ia-scrolly-visual {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--ia-bg);
+    padding: 0.6rem 0;
+  }
+  .ia-scrolly-sticky {
+    position: static;
+  }
+  .ia-scrolly-step {
+    min-height: 60vh;
+  }
+}
+
+/* --- Scrolly bar chart --------------------------------------------------- */
+
+.ia-chart {
+  background: var(--ia-surface);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  font-family: system-ui, sans-serif;
+}
+
+.ia-chart-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.ia-chart-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ia-chart-label {
+  font-size: 0.85rem;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ia-chart-track {
+  position: relative;
+  height: 26px;
+  background: color-mix(in srgb, var(--ia-dim) 18%, transparent);
+  border-radius: 5px;
+}
+
+.ia-chart-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 5px;
+  background: var(--ia-accent);
+}
+
+.ia-chart-value {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ia-text);
+}
+
+/* --- Sentence focus -------------------------------------------------------- */
+
+.ia-focus {
+  opacity: 0.25;
+  transition: opacity 0.35s ease, background-color 0.35s ease;
+  border-radius: 3px;
+}
+
+.ia-focus.active {
+  opacity: 1;
+}
+
+.ia-focus-mark.active {
+  background: color-mix(in srgb, var(--ia-accent) 16%, transparent);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }

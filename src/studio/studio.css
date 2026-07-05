@@ -288,6 +288,192 @@ textarea:focus {
   border-top: 1px dashed var(--border);
 }
 
+/* --- Insert zones (drag media into the essay) ------------------------------ */
+
+.insert-zone {
+  height: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: height 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+}
+
+.insert-zone span {
+  display: none;
+  font-size: 11.5px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.insert-zone.visible {
+  height: 36px;
+  margin: 2px 0;
+  border: 2px dashed var(--border);
+}
+
+.insert-zone.visible span {
+  display: inline;
+  color: var(--text-dim);
+}
+
+.insert-zone.over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.insert-zone.over span {
+  color: var(--accent);
+}
+
+/* --- Theme picker ----------------------------------------------------------- */
+
+.theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.theme-picker > span {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.theme-picker select {
+  width: auto;
+}
+
+/* --- Help modal ------------------------------------------------------------- */
+
+.help-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.help-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(640px, 92vw);
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: 20px 26px 26px;
+  line-height: 1.55;
+}
+
+.help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.help-modal h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.help-modal h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin: 20px 0 8px;
+}
+
+.help-modal ol,
+.help-modal ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.help-modal li {
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.help-modal dl {
+  margin: 0;
+}
+
+.help-item dt {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.help-item dd {
+  margin: 2px 0 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.help-note {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+
+.help-modal code {
+  background: var(--bg-input);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+/* --- Scrolly steps editor ----------------------------------------------------- */
+
+.steps-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.step-editor {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--bg-input);
+}
+
+.step-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.step-editor-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.mini-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 11px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.mini-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
 /* --- Media library ----------------------------------------------------------- */
 
 .media-library {
@@ -325,6 +511,19 @@ textarea:focus {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px;
+}
+
+.media-card.draggable {
+  cursor: grab;
+}
+
+.media-card.draggable:active {
+  cursor: grabbing;
+}
+
+.block-text.empty {
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 .media-thumb {

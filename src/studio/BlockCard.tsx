@@ -43,7 +43,9 @@ export function BlockCard({ block, media }: { block: Block; media: MediaItem[] }
           ))}
         </select>
       </div>
-      <p className="block-text">{block.rawText}</p>
+      <p className={`block-text${block.rawText ? '' : ' empty'}`}>
+        {block.rawText || '(media block — no text)'}
+      </p>
       <div onClick={(e) => e.stopPropagation()}>
         <TreatmentConfig
           block={block}
