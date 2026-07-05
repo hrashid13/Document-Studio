@@ -33,7 +33,7 @@ Notes:
 3. **Import media** — drag-drop or "Add files" in the left panel; paste URLs for link items. Tag items ("before", "after", …).
 4. **Drag media into the essay** — drag an image or file from the media library and drop it between two storyboard blocks to insert it there (images become figures, files become download cards).
 5. **Style each block** — pick a *text style* (Plain / Heading / Sentence focus) and combine any number of *features*: Scroll reveal, Hover annotate, Inline link (linked phrase or button), Image figure, File attachment, Drag compare, Sticky scroll. Primary settings are on the card; everything else in the right-hand Inspector.
-6. **Pick a theme** — the toolbar Theme dropdown swaps font pairing, accent color, and spacing (Classic / Modern / Editorial / Night). On top of the theme you can manually set a document-wide font (7 choices), accent color (10), and font color (4) in the Inspector when no block is selected — or override font/font color per block.
+6. **Pick a theme** — the toolbar Theme dropdown swaps font pairing, accent color, and spacing (Classic / Modern / Editorial / Night). On top of the theme you can manually set a document-wide font (7 choices), accent color (10), font color (4), and background color (10) in the Inspector when no block is selected — or override font/font color per block.
 7. **Preview** — full-width live render using the exact same components as the export.
 8. **Export…** — pick a destination; the app writes `<destination>/<project-name>/` with `index.html`, `viewer.js/css`, and copied `assets/`. Open `index.html` directly in a browser.
 

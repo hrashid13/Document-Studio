@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react'
 import type { CSSProperties } from 'react'
 import {
   accentValue,
+  bgColorValue,
   fontStack,
   getTreatment,
   migrateProject,
@@ -53,7 +54,7 @@ const MEDIA_TYPES = new Set(['drag-compare', 'image-figure', 'attachment', 'scro
 function BlockView({ block, media }: { block: Block; media: MediaItem[] }) {
   const mediaParts = block.treatments.filter((t) => MEDIA_TYPES.has(t.type))
 
-  // Per-block manual font/color overrides.
+  // Per-block manual font/color/alignment overrides.
   const style: CSSProperties = {}
   const font = fontStack(block.style?.font)
   const color = textColorValue(block.style?.textColor)
@@ -62,6 +63,8 @@ function BlockView({ block, media }: { block: Block; media: MediaItem[] }) {
     style.color = color
     ;(style as Record<string, string>)['--ia-text'] = color
   }
+  const align = block.style?.align
+  if (align === 'center' || align === 'right') style.textAlign = align
 
   const inner = (
     <>
@@ -102,9 +105,11 @@ export function ArticleRenderer({
   const accent = accentValue(project.style?.accentColor)
   const font = fontStack(project.style?.font)
   const textColor = textColorValue(project.style?.textColor)
+  const bgColor = bgColorValue(project.style?.bgColor)
   if (accent) docVars['--ia-accent'] = accent
   if (font) docVars['--ia-font-body'] = font
   if (textColor) docVars['--ia-text'] = textColor
+  if (bgColor) docVars['--ia-bg'] = bgColor
 
   return (
     <AssetContext.Provider value={resolveAsset ?? ((p) => p)}>

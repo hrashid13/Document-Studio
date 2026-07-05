@@ -1,4 +1,4 @@
-import { ACCENT_COLORS, AVAILABLE_TREATMENTS, FONTS, TEXT_COLORS, addonsOf, textModeOf } from '../shared/types'
+import { ACCENT_COLORS, AVAILABLE_TREATMENTS, BG_COLORS, FONTS, TEXT_COLORS, addonsOf, textModeOf } from '../shared/types'
 import type { TreatmentType } from '../shared/types'
 import { useStudio } from './state'
 import { TreatmentConfig } from './TreatmentConfig'
@@ -80,6 +80,15 @@ function DocumentStyles() {
             onChange={(textColor) => dispatch({ type: 'SET_DOC_STYLE', patch: { textColor } })}
           />
         </div>
+        <div className="field">
+          <span>Background color (whole document)</span>
+          <Swatches
+            colors={BG_COLORS}
+            value={style?.bgColor}
+            onChange={(bgColor) => dispatch({ type: 'SET_DOC_STYLE', patch: { bgColor } })}
+          />
+          <p className="hint">The two dark backgrounds read best with the Paper font color.</p>
+        </div>
       </div>
     </div>
   )
@@ -102,7 +111,18 @@ export function Inspector() {
       <div className="panel-title">Inspector</div>
       <div className="inspector-block-info">
         <span className="inspector-kicker">Block {block.order + 1}</span>
-        <p className="inspector-text">{block.rawText || '(media block — no text)'}</p>
+      </div>
+
+      <div className="inspector-section">
+        <div className="section-title">Text</div>
+        <textarea
+          className="block-text-editor"
+          rows={6}
+          placeholder="(no text — this block only shows its media/features)"
+          value={block.rawText}
+          onChange={(e) => dispatch({ type: 'UPDATE_BLOCK_TEXT', id: block.id, rawText: e.target.value })}
+        />
+        <p className="hint">You can also double-click a block's text in the storyboard to edit it in place.</p>
       </div>
 
       <div className="inspector-section">
@@ -142,6 +162,21 @@ export function Inspector() {
 
       <div className="inspector-section">
         <div className="section-title">Block style</div>
+        <div className="field">
+          <span>Alignment</span>
+          <div className="align-row">
+            {(['left', 'center', 'right'] as const).map((a) => (
+              <button
+                key={a}
+                className={`align-btn${(block.style?.align ?? 'left') === a ? ' selected' : ''}`}
+                title={`Align ${a}`}
+                onClick={() => dispatch({ type: 'SET_BLOCK_STYLE', id: block.id, patch: { align: a } })}
+              >
+                {a === 'left' ? 'Left' : a === 'center' ? 'Center' : 'Right'}
+              </button>
+            ))}
+          </div>
+        </div>
         <label className="field">
           <span>Font (this block only)</span>
           <FontSelect

@@ -48,9 +48,9 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
         <h3>Themes & custom styles</h3>
         <p className="help-note">
           The toolbar Theme dropdown swaps the article's font pairing, accent color, and spacing. On top of that you
-          can set a manual font, accent color, and font color for the <strong>whole document</strong> (Inspector, with
-          no block selected) or override the font and font color of a <strong>single block</strong> (Inspector, block
-          selected). Pick ∅ to return to the theme default.
+          can set a manual font, accent color, font color, and background color for the <strong>whole document</strong>{' '}
+          (Inspector, with no block selected) or override the font and font color of a <strong>single block</strong>{' '}
+          (Inspector, block selected). Pick ∅ to return to the theme default.
         </p>
         <dl>
           {THEMES.map((t) => (
@@ -64,6 +64,8 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
         <h3>Tips</h3>
         <ul>
           <li>Drag the ⠿ handle on a card to reorder blocks.</li>
+          <li>Double-click a block's text in the storyboard (or use the Text box in the Inspector) to edit it.</li>
+          <li>Align any block left, center, or right in the Inspector's Block style section — handy for centered section headers.</li>
           <li>Combine features: e.g. a Heading with Scroll reveal, or Sentence focus + Sticky scroll (step text highlights line by line).</li>
           <li>Inline links: link a phrase in the text, or show a button below the block instead.</li>
           <li>Chart steps take one <code>Label, value</code> per line. Reuse the same labels across steps so bars morph instead of popping.</li>

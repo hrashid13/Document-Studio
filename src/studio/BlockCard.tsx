@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { ADDON_TYPES, AVAILABLE_TREATMENTS, addonsOf, textModeOf } from '../shared/types'
@@ -16,6 +17,7 @@ export function BlockCard({ block, media }: { block: Block; media: MediaItem[] }
   })
 
   const selected = state.selectedBlockId === block.id
+  const [editing, setEditing] = useState(false)
   const addons = addonsOf(block)
   const availableAddons = ADDON_TYPES.filter((t) => !addons.some((a) => a.type === t))
 
@@ -62,9 +64,31 @@ export function BlockCard({ block, media }: { block: Block; media: MediaItem[] }
           ))}
         </select>
       </div>
-      <p className={`block-text${block.rawText ? '' : ' empty'}`}>
-        {block.rawText || '(media block — no text)'}
-      </p>
+      {editing ? (
+        <textarea
+          className="block-text-input"
+          autoFocus
+          rows={4}
+          value={block.rawText}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => dispatch({ type: 'UPDATE_BLOCK_TEXT', id: block.id, rawText: e.target.value })}
+          onBlur={() => setEditing(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape' || (e.key === 'Enter' && e.ctrlKey)) (e.target as HTMLTextAreaElement).blur()
+          }}
+        />
+      ) : (
+        <p
+          className={`block-text${block.rawText ? '' : ' empty'}`}
+          title="Double-click to edit the text"
+          onDoubleClick={(e) => {
+            e.stopPropagation()
+            setEditing(true)
+          }}
+        >
+          {block.rawText || '(no text — double-click to write some)'}
+        </p>
+      )}
       {addons.length > 0 && (
         <div className="addon-chips" onClick={(e) => e.stopPropagation()}>
           {addons.map((t) => (

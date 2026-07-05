@@ -143,6 +143,20 @@ export const ACCENT_COLORS: { id: string; label: string; value: string }[] = [
   { id: 'slate', label: 'Slate', value: '#475569' },
 ]
 
+/** Manual document background colors — soft tones that keep text readable. */
+export const BG_COLORS: { id: string; label: string; value: string }[] = [
+  { id: 'white', label: 'Pure white', value: '#ffffff' },
+  { id: 'warm-paper', label: 'Warm paper', value: '#faf8f4' },
+  { id: 'ivory', label: 'Ivory', value: '#fffdf7' },
+  { id: 'cream', label: 'Cream', value: '#fdf6e3' },
+  { id: 'mist', label: 'Mist (cool gray)', value: '#f1f5f9' },
+  { id: 'sage', label: 'Sage tint', value: '#eef2eb' },
+  { id: 'sky', label: 'Sky tint', value: '#eef4fb' },
+  { id: 'blush', label: 'Blush', value: '#fdf2f0' },
+  { id: 'charcoal', label: 'Charcoal (dark — pair with Paper text)', value: '#1c1c22' },
+  { id: 'midnight', label: 'Midnight (dark — pair with Paper text)', value: '#0f172a' },
+]
+
 /** Manual font (text) colors. */
 export const TEXT_COLORS: { id: string; label: string; value: string }[] = [
   { id: 'ink', label: 'Ink (near-black)', value: '#1b1b1f' },
@@ -161,6 +175,8 @@ export interface BlockStyle {
   font?: string
   /** TEXT_COLORS id. */
   textColor?: string
+  /** Text alignment for the block ('left' is the default). */
+  align?: 'left' | 'center' | 'right'
 }
 
 export interface DocStyle {
@@ -170,6 +186,8 @@ export interface DocStyle {
   font?: string
   /** TEXT_COLORS id — overrides the theme text color. */
   textColor?: string
+  /** BG_COLORS id — overrides the theme background. */
+  bgColor?: string
 }
 
 export interface MediaItem {
@@ -292,6 +310,10 @@ export function accentValue(id: unknown): string | undefined {
 
 export function textColorValue(id: unknown): string | undefined {
   return TEXT_COLORS.find((c) => c.id === id)?.value
+}
+
+export function bgColorValue(id: unknown): string | undefined {
+  return BG_COLORS.find((c) => c.id === id)?.value
 }
 
 /** Parses scrolly chart data: one "Label, value" per line. */

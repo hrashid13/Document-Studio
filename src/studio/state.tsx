@@ -21,6 +21,7 @@ export type StudioAction =
   | { type: 'ADD_TREATMENT'; id: string; ttype: TreatmentType }
   | { type: 'REMOVE_TREATMENT'; id: string; ttype: TreatmentType }
   | { type: 'UPDATE_TREATMENT_CONFIG'; id: string; ttype: TreatmentType; patch: Record<string, unknown> }
+  | { type: 'UPDATE_BLOCK_TEXT'; id: string; rawText: string }
   | { type: 'SET_BLOCK_STYLE'; id: string; patch: BlockStyle }
   | { type: 'SET_DOC_STYLE'; patch: DocStyle }
   | { type: 'DELETE_BLOCK'; id: string }
@@ -99,6 +100,8 @@ function reducer(state: StudioState, action: StudioAction): StudioState {
           t.type === action.ttype ? { ...t, config: { ...t.config, ...action.patch } } : t,
         ),
       }))
+    case 'UPDATE_BLOCK_TEXT':
+      return withBlock(state, action.id, (b) => ({ ...b, rawText: action.rawText }))
     case 'SET_BLOCK_STYLE':
       return withBlock(state, action.id, (b) => ({
         ...b,
