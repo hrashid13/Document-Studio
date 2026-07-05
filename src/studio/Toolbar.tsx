@@ -11,7 +11,7 @@ export function Toolbar() {
 
   const loadProject = async (kind: 'new' | 'open') => {
     const res = kind === 'new' ? await window.studio!.newProject() : await window.studio!.openProject()
-    if (res.error) alert(res.error)
+    if (res.error) await window.studio!.message(res.error)
     if (res.dir && res.project) dispatch({ type: 'PROJECT_LOADED', dir: res.dir, project: res.project })
   }
 
@@ -23,7 +23,7 @@ export function Toolbar() {
       try {
         text = await extractDocxText(res.data!)
       } catch (err) {
-        alert(`Could not read the .docx file: ${err instanceof Error ? err.message : err}`)
+        await window.studio!.message(`Could not read the .docx file: ${err instanceof Error ? err.message : err}`)
         return
       }
     } else {
@@ -31,12 +31,15 @@ export function Toolbar() {
     }
     const paragraphs = splitIntoParagraphs(text)
     if (paragraphs.length === 0) {
-      alert('No paragraphs found in that file.')
+      await window.studio!.message('No paragraphs found in that file.')
       return
     }
     if (
       project!.blocks.length > 0 &&
-      !confirm(`Importing "${res.name}" will replace the current ${project!.blocks.length} block(s). Continue?`)
+      !(await window.studio!.confirm(
+        `Importing "${res.name}" will replace the current ${project!.blocks.length} block(s).`,
+        'Continue?',
+      ))
     ) {
       return
     }
@@ -45,7 +48,7 @@ export function Toolbar() {
 
   const exportArticle = async () => {
     const res = await window.studio!.exportArticle({ ...project!, updatedAt: new Date().toISOString() })
-    if (res.error) alert(res.error)
+    if (res.error) await window.studio!.message(res.error)
   }
 
   const inPreview = state.view === 'preview'

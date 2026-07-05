@@ -1,7 +1,7 @@
-import type { Block, MediaItem, ScrollyStep } from '../shared/types'
+import type { MediaItem, ScrollyStep, Treatment } from '../shared/types'
 
 interface Props {
-  block: Block
+  treatment: Treatment
   media: MediaItem[]
   compact?: boolean
   onConfig: (patch: Record<string, unknown>) => void
@@ -123,14 +123,44 @@ function ScrollyStepsEditor({
 }
 
 /**
- * Config controls for a block's treatment. `compact` renders only the primary
- * fields (shown inline on storyboard cards); the full form lives in the
- * Inspector.
+ * Config controls for one treatment on a block. `compact` renders only the
+ * primary fields (shown inline on storyboard cards); the full form lives in
+ * the Inspector.
  */
-export function TreatmentConfig({ block, media, compact = false, onConfig }: Props) {
-  const cfg = block.treatment.config
+export function TreatmentConfig({ treatment, media, compact = false, onConfig }: Props) {
+  const cfg = treatment.config
 
-  switch (block.treatment.type) {
+  switch (treatment.type) {
+    case 'heading':
+      return (
+        <div className="config-form">
+          <label className="field">
+            <span>Heading size</span>
+            <select
+              value={String(cfg.level ?? 1)}
+              onChange={(e) => onConfig({ level: Number(e.target.value) })}
+            >
+              <option value="1">Large</option>
+              <option value="2">Medium</option>
+              <option value="3">Small</option>
+            </select>
+          </label>
+        </div>
+      )
+
+    case 'sentence-focus':
+      return (
+        <div className="config-form">
+          <label className="field">
+            <span>Highlight style</span>
+            <select value={String(cfg.style ?? 'dim')} onChange={(e) => onConfig({ style: e.target.value })}>
+              <option value="dim">Dim the rest</option>
+              <option value="mark">Dim + accent highlight</option>
+            </select>
+          </label>
+        </div>
+      )
+
     case 'scroll-reveal':
       return (
         <div className="config-form">
@@ -231,6 +261,44 @@ export function TreatmentConfig({ block, media, compact = false, onConfig }: Pro
       )
     }
 
+    case 'inline-link': {
+      const display = String(cfg.display ?? 'inline')
+      return (
+        <div className="config-form">
+          <label className="field">
+            <span>Show as</span>
+            <select value={display} onChange={(e) => onConfig({ display: e.target.value })}>
+              <option value="inline">Linked phrase in the text</option>
+              <option value="button">Button below the text</option>
+            </select>
+          </label>
+          <label className="field">
+            <span>URL</span>
+            <input
+              value={String(cfg.url ?? '')}
+              placeholder="https://…"
+              onChange={(e) => onConfig({ url: e.target.value })}
+            />
+          </label>
+          {display === 'inline' ? (
+            <label className="field">
+              <span>Phrase to link (must appear in the block text)</span>
+              <input
+                value={String(cfg.triggerPhrase ?? '')}
+                placeholder="e.g. read the full report"
+                onChange={(e) => onConfig({ triggerPhrase: e.target.value })}
+              />
+            </label>
+          ) : (
+            <label className="field">
+              <span>Button label</span>
+              <input value={String(cfg.label ?? '')} onChange={(e) => onConfig({ label: e.target.value })} />
+            </label>
+          )}
+        </div>
+      )
+    }
+
     case 'image-figure':
       return (
         <div className="config-form">
@@ -302,19 +370,6 @@ export function TreatmentConfig({ block, media, compact = false, onConfig }: Pro
         </div>
       )
     }
-
-    case 'sentence-focus':
-      return (
-        <div className="config-form">
-          <label className="field">
-            <span>Highlight style</span>
-            <select value={String(cfg.style ?? 'dim')} onChange={(e) => onConfig({ style: e.target.value })}>
-              <option value="dim">Dim the rest</option>
-              <option value="mark">Dim + accent highlight</option>
-            </select>
-          </label>
-        </div>
-      )
 
     default:
       return compact ? null : <p className="hint">Plain text — no settings.</p>

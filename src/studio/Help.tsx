@@ -1,6 +1,9 @@
 import { AVAILABLE_TREATMENTS, THEMES } from '../shared/types'
 
 export function HelpModal({ onClose }: { onClose: () => void }) {
+  const textModes = AVAILABLE_TREATMENTS.filter((t) => t.category === 'text')
+  const addons = AVAILABLE_TREATMENTS.filter((t) => t.category === 'addon')
+
   return (
     <div className="help-backdrop" onClick={onClose}>
       <div className="help-modal" onClick={(e) => e.stopPropagation()}>
@@ -13,18 +16,18 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
 
         <h3>Quick start</h3>
         <ol>
-          <li><strong>New project</strong> — pick an empty folder; the studio keeps everything (text, media, settings) in there.</li>
+          <li><strong>New project</strong> — pick an empty folder; the studio keeps everything (text, media, settings) in there. Recent projects appear on the start screen so you can jump back in.</li>
           <li><strong>Import essay</strong> — a .txt, .md, or .docx file. Every paragraph becomes a card in the storyboard.</li>
           <li><strong>Add media</strong> — drop images/files onto the left panel, or paste a URL. Tag items ("before", "hero") to find them quickly.</li>
           <li><strong>Drag media into the essay</strong> — drag any image or file from the left panel and drop it <em>between</em> two paragraphs in the storyboard to insert it there.</li>
-          <li><strong>Pick treatments</strong> — each card has a dropdown that controls how that paragraph behaves. Click a card to fine-tune it in the right-hand Inspector.</li>
+          <li><strong>Style each block</strong> — pick a <em>text style</em> (Plain / Heading / Sentence focus) and add any number of <em>features</em> with the "+ Add feature…" dropdown. Click a card to fine-tune everything in the right-hand Inspector.</li>
           <li><strong>Preview</strong> — a live, scrollable render of the article, identical to what gets exported.</li>
           <li><strong>Export…</strong> — writes a folder with an index.html you can open anywhere or host on any static site.</li>
         </ol>
 
-        <h3>Treatments (what each one does)</h3>
+        <h3>Text styles (pick one per block)</h3>
         <dl>
-          {AVAILABLE_TREATMENTS.map((t) => (
+          {textModes.map((t) => (
             <div key={t.value} className="help-item">
               <dt>{t.label}</dt>
               <dd>{t.description}</dd>
@@ -32,10 +35,22 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
           ))}
         </dl>
 
-        <h3>Themes</h3>
+        <h3>Features (combine as many as you like)</h3>
+        <dl>
+          {addons.map((t) => (
+            <div key={t.value} className="help-item">
+              <dt>{t.label}</dt>
+              <dd>{t.description}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <h3>Themes & custom styles</h3>
         <p className="help-note">
-          The theme dropdown in the toolbar swaps the article's font pairing, accent color, and spacing — no CSS
-          required. It applies to the preview and the export alike.
+          The toolbar Theme dropdown swaps the article's font pairing, accent color, and spacing. On top of that you
+          can set a manual font, accent color, and font color for the <strong>whole document</strong> (Inspector, with
+          no block selected) or override the font and font color of a <strong>single block</strong> (Inspector, block
+          selected). Pick ∅ to return to the theme default.
         </p>
         <dl>
           {THEMES.map((t) => (
@@ -49,8 +64,9 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
         <h3>Tips</h3>
         <ul>
           <li>Drag the ⠿ handle on a card to reorder blocks.</li>
-          <li>For sticky-scroll sections, write short punchy step texts — each step should earn one change in the visual.</li>
-          <li>Chart steps take one <code>Label, value</code> per line. Reuse the same labels across steps to make bars morph instead of pop.</li>
+          <li>Combine features: e.g. a Heading with Scroll reveal, or Sentence focus + Sticky scroll (step text highlights line by line).</li>
+          <li>Inline links: link a phrase in the text, or show a button below the block instead.</li>
+          <li>Chart steps take one <code>Label, value</code> per line. Reuse the same labels across steps so bars morph instead of popping.</li>
           <li>Everything autosaves to <code>project.json</code> in your project folder.</li>
         </ul>
       </div>

@@ -90,6 +90,64 @@
   margin: 0 0 var(--ia-para-space);
 }
 
+/* --- Headings (block text mode) ------------------------------------------- */
+
+.ia-heading {
+  font-family: var(--ia-font-heading);
+  font-weight: var(--ia-heading-weight);
+  line-height: 1.25;
+  margin: 2.4rem 0 1.2rem;
+  letter-spacing: -0.01em;
+}
+
+.ia-heading-1 {
+  font-size: 2.1rem;
+}
+
+.ia-heading-2 {
+  font-size: 1.65rem;
+}
+
+.ia-heading-3 {
+  font-size: 1.3rem;
+}
+
+/* --- Inline links & link buttons ------------------------------------------- */
+
+.ia-inline-link {
+  color: var(--ia-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  border-radius: 3px;
+}
+
+.ia-inline-link:hover {
+  background: color-mix(in srgb, var(--ia-accent) 14%, transparent);
+}
+
+.ia-link-button-row {
+  margin: 0 0 var(--ia-para-space);
+}
+
+.ia-link-button {
+  display: inline-block;
+  background: var(--ia-accent);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.ia-link-button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
 .ia-scroll-tail {
   height: 45vh;
 }

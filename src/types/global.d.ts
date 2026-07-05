@@ -27,9 +27,19 @@ interface ExportResult {
   dest?: string
 }
 
+export interface RecentProject {
+  dir: string
+  name: string
+  openedAt: string
+}
+
 export interface StudioAPI {
   newProject(): Promise<ProjectResult>
   openProject(): Promise<ProjectResult>
+  openProjectPath(dir: string): Promise<ProjectResult>
+  recentProjects(): Promise<RecentProject[]>
+  confirm(message: string, detail?: string): Promise<boolean>
+  message(message: string, detail?: string): Promise<boolean>
   saveProject(project: Project): Promise<{ ok?: boolean; error?: string }>
   importEssay(): Promise<EssayResult>
   importMedia(startIndex: number): Promise<MediaResult>

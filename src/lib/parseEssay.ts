@@ -24,6 +24,6 @@ export function paragraphsToBlocks(paragraphs: string[]): Block[] {
     id: `block_${String(i + 1).padStart(4, '0')}`,
     order: i,
     rawText,
-    treatment: { type: 'plain', config: {} },
+    treatments: [],
   }))
 }

@@ -79,7 +79,7 @@ export function MediaLibrary() {
 
   const importViaDialog = async () => {
     const res = await window.studio!.importMedia(nextMediaIndex(media))
-    if (res.error) alert(res.error)
+    if (res.error) await window.studio!.message(res.error)
     if (res.items) addItems(res.items)
   }
 
@@ -91,7 +91,7 @@ export function MediaLibrary() {
       .filter(Boolean)
     if (!paths.length) return
     const res = await window.studio!.importMediaPaths(paths, nextMediaIndex(media))
-    if (res.error) alert(res.error)
+    if (res.error) await window.studio!.message(res.error)
     if (res.items) addItems(res.items)
   }
 

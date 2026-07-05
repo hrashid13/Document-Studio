@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
-import { defaultConfig } from '../shared/types'
-import type { Block, MediaItem, Project, Treatment } from '../shared/types'
+import { defaultConfig, isTextMode, migrateProject } from '../shared/types'
+import type { Block, BlockStyle, DocStyle, MediaItem, Project, Treatment, TreatmentType } from '../shared/types'
 
 export interface StudioState {
   dir: string | null
@@ -17,8 +17,12 @@ export type StudioAction =
   | { type: 'PROJECT_LOADED'; dir: string; project: Project }
   | { type: 'SET_BLOCKS'; blocks: Block[] }
   | { type: 'INSERT_BLOCK'; index: number; block: Block }
-  | { type: 'SET_TREATMENT'; id: string; treatment: Treatment }
-  | { type: 'UPDATE_CONFIG'; id: string; patch: Record<string, unknown> }
+  | { type: 'SET_TEXT_MODE'; id: string; ttype: TreatmentType }
+  | { type: 'ADD_TREATMENT'; id: string; ttype: TreatmentType }
+  | { type: 'REMOVE_TREATMENT'; id: string; ttype: TreatmentType }
+  | { type: 'UPDATE_TREATMENT_CONFIG'; id: string; ttype: TreatmentType; patch: Record<string, unknown> }
+  | { type: 'SET_BLOCK_STYLE'; id: string; patch: BlockStyle }
+  | { type: 'SET_DOC_STYLE'; patch: DocStyle }
   | { type: 'DELETE_BLOCK'; id: string }
   | { type: 'REORDER_BLOCKS'; from: number; to: number }
   | { type: 'ADD_MEDIA'; items: MediaItem[] }
@@ -41,10 +45,23 @@ function withProject(state: StudioState, fn: (p: Project) => Project): StudioSta
   return { ...state, project: fn(state.project) }
 }
 
+function withBlock(state: StudioState, id: string, fn: (b: Block) => Block): StudioState {
+  return withProject(state, (p) => ({
+    ...p,
+    blocks: p.blocks.map((b) => (b.id === id ? fn(b) : b)),
+  }))
+}
+
+/** Drops keys whose value is an empty string (used to clear style overrides). */
+function cleanStyle<T extends Record<string, unknown>>(style: T): T | undefined {
+  const entries = Object.entries(style).filter(([, v]) => v !== '' && v !== undefined)
+  return entries.length ? (Object.fromEntries(entries) as T) : undefined
+}
+
 function reducer(state: StudioState, action: StudioAction): StudioState {
   switch (action.type) {
     case 'PROJECT_LOADED':
-      return { ...initialState, dir: action.dir, project: action.project }
+      return { ...initialState, dir: action.dir, project: migrateProject(action.project) }
     case 'SET_BLOCKS':
       return { ...withProject(state, (p) => ({ ...p, blocks: action.blocks })), selectedBlockId: null }
     case 'INSERT_BLOCK':
@@ -56,20 +73,39 @@ function reducer(state: StudioState, action: StudioAction): StudioState {
         }),
         selectedBlockId: action.block.id,
       }
-    case 'SET_TREATMENT':
-      return withProject(state, (p) => ({
-        ...p,
-        blocks: p.blocks.map((b) => (b.id === action.id ? { ...b, treatment: action.treatment } : b)),
+    case 'SET_TEXT_MODE':
+      return withBlock(state, action.id, (b) => ({
+        ...b,
+        treatments: [
+          ...(action.ttype !== 'plain' ? [{ type: action.ttype, config: defaultConfig(action.ttype) }] : []),
+          ...b.treatments.filter((t) => !isTextMode(t.type)),
+        ],
       }))
-    case 'UPDATE_CONFIG':
-      return withProject(state, (p) => ({
-        ...p,
-        blocks: p.blocks.map((b) =>
-          b.id === action.id
-            ? { ...b, treatment: { ...b.treatment, config: { ...b.treatment.config, ...action.patch } } }
-            : b,
+    case 'ADD_TREATMENT':
+      return withBlock(state, action.id, (b) =>
+        b.treatments.some((t) => t.type === action.ttype)
+          ? b
+          : { ...b, treatments: [...b.treatments, { type: action.ttype, config: defaultConfig(action.ttype) }] },
+      )
+    case 'REMOVE_TREATMENT':
+      return withBlock(state, action.id, (b) => ({
+        ...b,
+        treatments: b.treatments.filter((t) => t.type !== action.ttype),
+      }))
+    case 'UPDATE_TREATMENT_CONFIG':
+      return withBlock(state, action.id, (b) => ({
+        ...b,
+        treatments: b.treatments.map((t) =>
+          t.type === action.ttype ? { ...t, config: { ...t.config, ...action.patch } } : t,
         ),
       }))
+    case 'SET_BLOCK_STYLE':
+      return withBlock(state, action.id, (b) => ({
+        ...b,
+        style: cleanStyle({ ...b.style, ...action.patch }),
+      }))
+    case 'SET_DOC_STYLE':
+      return withProject(state, (p) => ({ ...p, style: cleanStyle({ ...p.style, ...action.patch }) }))
     case 'DELETE_BLOCK':
       return {
         ...withProject(state, (p) => ({
@@ -179,7 +215,7 @@ export function blockForMedia(item: MediaItem, id: string): Block {
     item.type === 'image'
       ? { type: 'image-figure', config: { ...defaultConfig('image-figure'), imageId: item.id } }
       : { type: 'attachment', config: { ...defaultConfig('attachment'), fileId: item.id } }
-  return { id, order: 0, rawText: '', treatment }
+  return { id, order: 0, rawText: '', treatments: [treatment] }
 }
 
 export function sortedBlocks(project: Project): Block[] {

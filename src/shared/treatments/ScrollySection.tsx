@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { findMedia, parseChartData } from '../types'
-import type { ScrollyStep } from '../types'
+import type { MediaItem, ScrollyStep } from '../types'
 import { useAssetResolver } from '../ArticleRenderer'
-import type { TreatmentProps } from '../ArticleRenderer'
+import { FocusParagraph } from '../TextContent'
 
 function Step({
   index,
   text,
   active,
+  focusText,
   onActive,
 }: {
   index: number
   text: string
   active: boolean
+  focusText: boolean
   onActive: (i: number) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -22,9 +24,10 @@ function Step({
   useEffect(() => {
     if (inView) onActive(index)
   }, [inView, index, onActive])
+  const body = text || '(empty step — write its text in the Inspector)'
   return (
     <div ref={ref} className={`ia-scrolly-step${active ? ' active' : ''}`}>
-      <p>{text || '(empty step — write its text in the Inspector)'}</p>
+      {focusText ? <FocusParagraph text={body} mark={false} /> : <p>{body}</p>}
     </div>
   )
 }
@@ -61,14 +64,22 @@ export function ScrollyBarChart({ data, title }: { data: { label: string; value:
   )
 }
 
-export function ScrollySection({ block, media }: TreatmentProps) {
+export function ScrollySection({
+  config,
+  media,
+  focusText = false,
+}: {
+  config: Record<string, unknown>
+  media: MediaItem[]
+  /** True when the block also has Sentence focus — step text highlights per line. */
+  focusText?: boolean
+}) {
   const resolve = useAssetResolver()
   const [active, setActive] = useState(0)
 
-  const cfg = block.treatment.config
-  const visualType = String(cfg.visualType ?? 'image')
-  const side = String(cfg.position ?? 'left') === 'right' ? 'right' : 'left'
-  const steps = (Array.isArray(cfg.steps) ? cfg.steps : []) as ScrollyStep[]
+  const visualType = String(config.visualType ?? 'image')
+  const side = String(config.position ?? 'left') === 'right' ? 'right' : 'left'
+  const steps = (Array.isArray(config.steps) ? config.steps : []) as ScrollyStep[]
 
   if (steps.length === 0) {
     return <div className="ia-scrolly-placeholder">Sticky-scroll section: add steps in the Inspector.</div>
@@ -81,7 +92,7 @@ export function ScrollySection({ block, media }: TreatmentProps) {
     const data = parseChartData(current.chartData)
     visual =
       data.length > 0 ? (
-        <ScrollyBarChart data={data} title={String(cfg.chartTitle ?? '')} />
+        <ScrollyBarChart data={data} title={String(config.chartTitle ?? '')} />
       ) : (
         <div className="ia-scrolly-placeholder">
           No chart data for this step. Enter one “Label, value” per line in the Inspector.
@@ -115,7 +126,14 @@ export function ScrollySection({ block, media }: TreatmentProps) {
       </div>
       <div className="ia-scrolly-steps">
         {steps.map((step, i) => (
-          <Step key={step.id ?? i} index={i} text={step.text} active={i === active} onActive={setActive} />
+          <Step
+            key={step.id ?? i}
+            index={i}
+            text={step.text}
+            active={i === active}
+            focusText={focusText}
+            onActive={setActive}
+          />
         ))}
       </div>
     </section>

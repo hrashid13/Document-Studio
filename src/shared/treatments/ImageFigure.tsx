@@ -1,24 +1,19 @@
 import { findMedia } from '../types'
+import type { MediaItem } from '../types'
 import { useAssetResolver } from '../ArticleRenderer'
-import type { TreatmentProps } from '../ArticleRenderer'
 
-export function ImageFigure({ block, media }: TreatmentProps) {
+export function ImageFigure({ config, media }: { config: Record<string, unknown>; media: MediaItem[] }) {
   const resolve = useAssetResolver()
-  const cfg = block.treatment.config
-  const item = findMedia(media, cfg.imageId)
-  const caption = String(cfg.caption ?? '')
+  const item = findMedia(media, config.imageId)
+  const caption = String(config.caption ?? '')
 
+  if (!item?.storedPath) {
+    return <div className="ia-compare-placeholder">Image figure: pick an image in the block settings.</div>
+  }
   return (
-    <div>
-      {item?.storedPath ? (
-        <figure className="ia-figure">
-          <img src={resolve(item.storedPath)} alt={caption || item.originalFilename} />
-          {caption && <figcaption>{caption}</figcaption>}
-        </figure>
-      ) : (
-        <div className="ia-compare-placeholder">Image figure: pick an image in the block settings.</div>
-      )}
-      {block.rawText && <p className="ia-paragraph">{block.rawText}</p>}
-    </div>
+    <figure className="ia-figure">
+      <img src={resolve(item.storedPath)} alt={caption || item.originalFilename} />
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
   )
 }

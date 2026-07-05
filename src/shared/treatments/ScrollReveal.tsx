@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { TreatmentProps } from '../ArticleRenderer'
+import type { ReactNode } from 'react'
 
 const OFFSETS: Record<string, { x?: number; y?: number }> = {
   up: { y: 48 },
@@ -7,9 +7,10 @@ const OFFSETS: Record<string, { x?: number; y?: number }> = {
   right: { x: 64 },
 }
 
-export function ScrollReveal({ block }: TreatmentProps) {
-  const direction = String(block.treatment.config.direction ?? 'up')
-  const delay = Number(block.treatment.config.delay ?? 0) || 0
+/** Wraps any block content so it fades/slides in when scrolled into view. */
+export function Reveal({ config, children }: { config: Record<string, unknown>; children: ReactNode }) {
+  const direction = String(config.direction ?? 'up')
+  const delay = Number(config.delay ?? 0) || 0
   const offset = OFFSETS[direction] ?? OFFSETS.up
 
   return (
@@ -19,7 +20,7 @@ export function ScrollReveal({ block }: TreatmentProps) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.8, delay, ease: 'easeOut' }}
     >
-      <p className="ia-paragraph">{block.rawText}</p>
+      {children}
     </motion.div>
   )
 }

@@ -46,6 +46,31 @@ async function readProject(dir) {
   return JSON.parse(raw)
 }
 
+// --- Recent projects (stored in the app's userData folder) ---
+
+function recentFile() {
+  return path.join(app.getPath('userData'), 'recent-projects.json')
+}
+
+function loadRecent() {
+  try {
+    const list = JSON.parse(fs.readFileSync(recentFile(), 'utf-8'))
+    return Array.isArray(list) ? list : []
+  } catch {
+    return []
+  }
+}
+
+function touchRecent(dir, name) {
+  const list = loadRecent().filter((r) => r.dir !== dir)
+  list.unshift({ dir, name, openedAt: new Date().toISOString() })
+  try {
+    fs.writeFileSync(recentFile(), JSON.stringify(list.slice(0, 10), null, 2), 'utf-8')
+  } catch {
+    // Non-fatal: recents are a convenience.
+  }
+}
+
 async function copyMediaFiles(sourcePaths, startIndex) {
   const items = []
   let i = startIndex
@@ -68,6 +93,49 @@ async function copyMediaFiles(sourcePaths, startIndex) {
 }
 
 function registerIpc() {
+  // Renderer-side window.confirm/alert break input focus in Electron until the
+  // window refocuses — these native message boxes don't, so all studio
+  // confirmations go through here.
+  ipcMain.handle('ui:confirm', async (_event, message, detail) => {
+    const result = await dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      buttons: ['Cancel', 'OK'],
+      defaultId: 1,
+      cancelId: 0,
+      message,
+      detail: detail || undefined,
+    })
+    return result.response === 1
+  })
+
+  ipcMain.handle('ui:message', async (_event, message, detail) => {
+    await dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      buttons: ['OK'],
+      message,
+      detail: detail || undefined,
+    })
+    return true
+  })
+
+  ipcMain.handle('projects:recent', async () => {
+    return loadRecent().filter((r) => fs.existsSync(projectFile(r.dir)))
+  })
+
+  ipcMain.handle('project:openPath', async (_event, dir) => {
+    if (!fs.existsSync(projectFile(dir))) {
+      return { error: 'That folder no longer contains a project.json file.' }
+    }
+    try {
+      const project = await readProject(dir)
+      currentProjectDir = dir
+      touchRecent(dir, project.projectName)
+      return { dir, project }
+    } catch (err) {
+      return { error: `Could not read project.json: ${err.message}` }
+    }
+  })
+
   ipcMain.handle('project:new', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
       title: 'Choose (or create) an empty folder for the new project',
@@ -80,6 +148,7 @@ function registerIpc() {
       // Folder already holds a project — just open it.
       const project = await readProject(dir)
       currentProjectDir = dir
+      touchRecent(dir, project.projectName)
       return { dir, project }
     }
 
@@ -94,6 +163,7 @@ function registerIpc() {
     await fsp.mkdir(path.join(dir, 'assets'), { recursive: true })
     await fsp.writeFile(projectFile(dir), JSON.stringify(project, null, 2), 'utf-8')
     currentProjectDir = dir
+    touchRecent(dir, project.projectName)
     return { dir, project }
   })
 
@@ -110,6 +180,7 @@ function registerIpc() {
     try {
       const project = await readProject(dir)
       currentProjectDir = dir
+      touchRecent(dir, project.projectName)
       return { dir, project }
     } catch (err) {
       return { error: `Could not read project.json: ${err.message}` }
