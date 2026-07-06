@@ -14,7 +14,9 @@
     "build": "npm run build:studio && npm run build:viewer",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
-    "dist": "npm run build && electron-builder --win"
+    "dist": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux"
   },
   "build": {
     "appId": "com.heshamrashid.interactive-article-studio",
@@ -38,6 +40,14 @@
     "win": {
       "target": "nsis",
       "icon": "installer/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "installer/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "installer/icon.png"
     },
     "nsis": {
       "oneClick": false,

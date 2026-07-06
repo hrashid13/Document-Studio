@@ -14,17 +14,30 @@ npm run dev            # starts Vite + Electron
 
 > Re-run `npm run build:viewer` after changing anything in `src/shared/` — the export step copies that prebuilt bundle into every exported article.
 
-## Build a Windows installer
+## Build installers
 
 ```bash
-npm run dist
+npm run dist        # Windows (NSIS installer) — run on Windows
+npm run dist:mac    # Mac (.dmg) — only works on an actual Mac
+npm run dist:linux  # Linux (AppImage + .deb) — run on Linux
 ```
 
-This builds the studio + viewer bundles and produces `release/Interactive Article Studio Setup <version>.exe` (NSIS). Anyone can run that installer on Windows — no Node or other tooling required. The installer lets the user pick an install directory and creates a desktop shortcut.
+Each produces its installer under `release/`. Anyone can run the installer for their platform — no Node or other tooling required. Icons live in `installer/` (`icon.ico` / `icon.icns` / `icon.png`).
+
+### Automated releases (all three platforms)
+
+Pushing a version tag triggers `.github/workflows/release.yml`, which builds Windows, Mac, and Linux in parallel on GitHub Actions and attaches all installers to a GitHub Release automatically:
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+No secrets to configure — it uses the repo's built-in `GITHUB_TOKEN`.
 
 Notes:
-- The installer is unsigned, so Windows SmartScreen may show a "protected your PC" prompt — click "More info" → "Run anyway".
-- `release/` is gitignored; distribute the setup exe via GitHub Releases rather than committing it.
+- The installers are unsigned, so Windows SmartScreen / macOS Gatekeeper may warn on first launch ("More info" → "Run anyway" on Windows; right-click → Open on Mac).
+- `release/` is gitignored; distribute installers via GitHub Releases rather than committing them.
 
 ## Workflow
 
