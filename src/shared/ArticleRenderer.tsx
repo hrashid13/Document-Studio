@@ -123,7 +123,9 @@ export function ArticleRenderer({
           ))}
           {scrollDriven && <div className="ia-scroll-tail" aria-hidden="true" />}
           <footer className="ia-footer">
-            <span>Made with Interactive Article Studio</span>
+            <a href="https://github.com/hrashid13/Document-Studio" target="_blank" rel="noreferrer">
+              Made with Interactive Article Studio
+            </a>
           </footer>
         </article>
       </div>

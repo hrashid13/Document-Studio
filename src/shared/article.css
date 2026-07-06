@@ -156,10 +156,20 @@
   margin-top: 5rem;
   text-align: center;
   font-size: 0.8rem;
-  color: var(--ia-dim);
   font-family: system-ui, sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.ia-footer a {
+  color: var(--ia-dim);
+  text-decoration: none;
+}
+
+.ia-footer a:hover {
+  color: var(--ia-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* --- Drag compare ------------------------------------------------------- */
