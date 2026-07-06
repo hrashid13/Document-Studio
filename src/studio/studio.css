@@ -298,6 +298,7 @@ textarea:focus {
   justify-content: center;
   transition: height 0.15s ease, background 0.15s ease;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .insert-zone span {
@@ -307,15 +308,30 @@ textarea:focus {
   pointer-events: none;
 }
 
-.insert-zone.visible {
+.insert-zone.visible,
+.insert-zone:hover {
   height: 36px;
   margin: 2px 0;
   border: 2px dashed var(--border);
 }
 
-.insert-zone.visible span {
+.insert-zone.visible span,
+.insert-zone:hover span {
   display: inline;
   color: var(--text-dim);
+}
+
+.insert-zone:hover {
+  border-color: var(--accent);
+}
+
+.insert-zone:hover span {
+  color: var(--accent);
+}
+
+.add-block-btn {
+  align-self: center;
+  margin-top: 6px;
 }
 
 .insert-zone.over {

@@ -8,10 +8,22 @@ import { BlockCard } from './BlockCard'
 
 const MEDIA_MIME = 'application/x-ia-media'
 
-/** Drop target between blocks: dragging a media item here inserts a new block. */
+/**
+ * Sits between blocks: click to insert a blank block there, or drop a
+ * media-library item to insert it as a figure/attachment block.
+ */
 function InsertZone({ index }: { index: number }) {
   const { state, dispatch } = useStudio()
   const [over, setOver] = useState(false)
+
+  const insertBlank = () => {
+    if (!state.project) return
+    dispatch({
+      type: 'INSERT_BLOCK',
+      index,
+      block: { id: nextBlockId(state.project.blocks), order: 0, rawText: '', treatments: [] },
+    })
+  }
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault()
@@ -27,6 +39,8 @@ function InsertZone({ index }: { index: number }) {
   return (
     <div
       className={`insert-zone${state.draggingMedia ? ' visible' : ''}${over ? ' over' : ''}`}
+      title="Click to add a blank block here"
+      onClick={insertBlank}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes(MEDIA_MIME)) {
           e.preventDefault()
@@ -37,7 +51,7 @@ function InsertZone({ index }: { index: number }) {
       onDragLeave={() => setOver(false)}
       onDrop={onDrop}
     >
-      <span>drop media here to insert a block</span>
+      <span>{state.draggingMedia ? 'drop media here to insert a block' : '+ add a blank block here'}</span>
     </div>
   )
 }
@@ -58,6 +72,15 @@ export function Storyboard() {
     dispatch({ type: 'REORDER_BLOCKS', from, to })
   }
 
+  const addBlankAtEnd = () => {
+    if (!state.project) return
+    dispatch({
+      type: 'INSERT_BLOCK',
+      index: blocks.length,
+      block: { id: nextBlockId(state.project.blocks), order: 0, rawText: '', treatments: [] },
+    })
+  }
+
   if (blocks.length === 0) {
     return (
       <div className="storyboard">
@@ -66,8 +89,11 @@ export function Storyboard() {
           <p>No blocks yet.</p>
           <p className="hint">
             Use “Import essay” in the toolbar to load a .txt, .md, or .docx file — each paragraph becomes a block. You
-            can also drag media from the left panel into this area.
+            can also drag media from the left panel into this area, or start from scratch:
           </p>
+          <button className="btn" onClick={addBlankAtEnd}>
+            + Add a blank block
+          </button>
         </div>
       </div>
     )
@@ -86,6 +112,9 @@ export function Storyboard() {
           <InsertZone index={blocks.length} />
         </SortableContext>
       </DndContext>
+      <button className="btn add-block-btn" onClick={addBlankAtEnd} title="Add a blank block at the end">
+        + Add block
+      </button>
     </div>
   )
 }

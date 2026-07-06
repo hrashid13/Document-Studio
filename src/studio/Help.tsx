@@ -65,6 +65,7 @@ export function HelpModal({ onClose }: { onClose: () => void }) {
         <ul>
           <li>Drag the ⠿ handle on a card to reorder blocks.</li>
           <li>Double-click a block's text in the storyboard (or use the Text box in the Inspector) to edit it.</li>
+          <li>Add a blank block anywhere: hover between two cards and click "+ add a blank block here", or use the "+ Add block" button at the bottom. Then type into it, make it a Heading, or attach a file or image.</li>
           <li>Align any block left, center, or right in the Inspector's Block style section — handy for centered section headers.</li>
           <li>Combine features: e.g. a Heading with Scroll reveal, or Sentence focus + Sticky scroll (step text highlights line by line).</li>
           <li>Inline links: link a phrase in the text, or show a button below the block instead.</li>
