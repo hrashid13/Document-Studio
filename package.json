@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Desktop studio for building Pudding-style interactive articles from an essay + media, exported as a self-contained static web bundle.",
-  "author": "Hesham Rashid",
+  "author": "Hesham Rashid <hrashid13@users.noreply.github.com>",
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "concurrently -k -s first \"npm:dev:vite\" \"npm:dev:electron\"",
