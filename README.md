@@ -68,3 +68,13 @@ The "Sticky scroll" treatment is the Pudding signature move: a visual stays pinn
 ## Not yet built (later phases)
 
 Click-expand, parallax-image, animated-stat, pull-quote, and embedded-link treatments, and the rules-engine auto-populate pass (PRD sections 8 & 10). Beyond the PRD, the app has since gained: image-figure and attachment blocks, drag-media-into-essay, themes, scrollytelling sections with morphing bar charts, and sentence-focus highlighting.
+
+## Author
+
+Hesham Rashid
+
+- Portfolio: https://www.heshamrashid.org/
+- LinkedIn: https://www.linkedin.com/in/hesham-rashid/ 
+- Email: h.f.rashid@gmail.com
+
+Master's in AI and Business Analytics - University of South Florida
